@@ -8,7 +8,7 @@ A lightweight, RESTful Rails API built with Ruby on Rails, designed to be used a
 - RESTful JSON endpoints
 - CORS enabled
 - PostgreSQL (or your preferred DB)
-- RSpec / Minitest setup (depending on your test preference)
+- RSpec
 - Environment-based configurations
 - Token-based authentication (optional, if included)
 
@@ -25,8 +25,8 @@ A lightweight, RESTful Rails API built with Ruby on Rails, designed to be used a
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/your-username/portfolio_api.git
+cd portfolio_api
 
 # Install dependencies
 bundle install
@@ -36,3 +36,18 @@ rails db:create db:migrate
 
 # Run the server
 rails s
+
+## 🌐 API Documentation
+Coming soon...
+
+🚧 TODOs
+ -[] Add authentication (e.g. JWT or Devise)
+ -[] Add more endpoints
+ -[] Setup CI/CD (e.g. GitHub Actions)
+ -[] Deploy
+
+📄 License
+This project is licensed under the MIT License.
+
+✍️ Author
+Rajal Kumar - @rajal-kumar
