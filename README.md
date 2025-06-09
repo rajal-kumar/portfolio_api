@@ -42,10 +42,10 @@ rails s
 Coming soon...
 
 🚧 TODOs
- -[] Add authentication (e.g. JWT or Devise)
- -[] Add more endpoints
- -[] Setup CI/CD (e.g. GitHub Actions)
- -[] Deploy
+ - [] Add authentication (e.g. JWT or Devise)
+ - [] Add more endpoints
+ - [] Setup CI/CD (e.g. GitHub Actions)
+ - [] Deploy
 
 📄 License
 This project is licensed under the MIT License.
