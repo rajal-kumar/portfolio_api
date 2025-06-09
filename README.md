@@ -36,6 +36,7 @@ rails db:create db:migrate
 
 # Run the server
 rails s
+```
 
 ## 🌐 API Documentation
 Coming soon...
