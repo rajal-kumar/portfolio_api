@@ -1,24 +1,38 @@
-# README
+# 🚀 Rails API Starter
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A lightweight, RESTful Rails API built with Ruby on Rails, designed to be used as a backend for web or mobile applications.
 
-Things you may want to cover:
+## 📦 Features
 
-* Ruby version
+- Ruby on Rails API mode (no views, no frontend)
+- RESTful JSON endpoints
+- CORS enabled
+- PostgreSQL (or your preferred DB)
+- RSpec / Minitest setup (depending on your test preference)
+- Environment-based configurations
+- Token-based authentication (optional, if included)
 
-* System dependencies
+## 🛠️ Setup Instructions
 
-* Configuration
+### Prerequisites
 
-* Database creation
+- Ruby (version 3.4.4)
+- Rails (version 8.0.2)
+- PostgreSQL or SQLite (update accordingly)
+- Node.js and Yarn (for managing frontend dependencies, if needed)
 
-* Database initialization
+### Getting Started
 
-* How to run the test suite
+```bash
+# Clone the repo
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
 
-* Services (job queues, cache servers, search engines, etc.)
+# Install dependencies
+bundle install
 
-* Deployment instructions
+# Setup database
+rails db:create db:migrate
 
-* ...
+# Run the server
+rails s
