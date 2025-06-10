@@ -53,6 +53,6 @@ This project is licensed under the [MIT License](https://github.com/rajal-kumar/
 
 ## ✍️ Author
 
-**Rajal Kumar** – [@yourhandle](https://github.com/rajal-kumar)
+**Rajal Kumar** – [@rajal-kumar](https://github.com/rajal-kumar)
 
 Feel free to reach out if you have questions or suggestions!
