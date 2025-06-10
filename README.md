@@ -47,8 +47,12 @@ Coming soon...
  - [ ] Setup CI/CD (e.g. GitHub Actions)
  - [ ] Deploy
 
-📄 License
-This project is licensed under the MIT License.
+## 📄 License
 
-✍️ Author
-Rajal Kumar - @rajal-kumar
+This project is licensed under the [MIT License](https://github.com/rajal-kumar/portfolio_api/blob/main/LICENSE).
+
+## ✍️ Author
+
+**Rajal Kumar** – [@yourhandle](https://github.com/rajal-kumar)
+
+Feel free to reach out if you have questions or suggestions!
