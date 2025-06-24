@@ -10,4 +10,10 @@ class Api::V1::ProjectsController < Api::V1::BaseController
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'Project not found' }, status: :not_found
   end
+
+  private
+
+  def project_params
+   params.expect(project: [:title, :description, :status, :technology_stack, :repository_url, :live_url, :notes])
+  end
 end
