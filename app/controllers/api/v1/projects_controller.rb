@@ -11,9 +11,19 @@ class Api::V1::ProjectsController < Api::V1::BaseController
     render json: { error: 'Project not found' }, status: :not_found
   end
 
+  def create
+    project = Project.new(project_params)
+
+    if project.save
+      render json: project, status: :created
+    else
+      render json: { errors: project.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def project_params
-   params.expect(project: [:title, :description, :status, :technology_stack, :repository_url, :live_url, :notes])
+   params.require(:project).permit(:title, :description, :status, :technology_stack, :repository_url, :live_url, :notes)
   end
 end
