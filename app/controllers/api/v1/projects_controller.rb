@@ -31,6 +31,17 @@ class Api::V1::ProjectsController < Api::V1::BaseController
     end
   end
 
+  def destroy
+   project = Project.find(params[:id])
+   project.destroy!
+
+    render json: { message: "Project deleted successfully" }, status: :ok
+  rescue ActiveRecord::RecordNotDestroyed => e
+    render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Project not found" }, status: :not_found
+  end
+
   private
 
   def project_params
