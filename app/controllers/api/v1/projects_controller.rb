@@ -8,7 +8,7 @@ class Api::V1::ProjectsController < Api::V1::BaseController
     @project = Project.find(params[:id])
     render json: @project, status: :ok
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Project not found' }, status: :not_found
+    render json: { error: "Project not found" }, status: :not_found
   end
 
   def create
