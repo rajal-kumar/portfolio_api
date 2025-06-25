@@ -25,10 +25,12 @@ class Api::V1::ProjectsController < Api::V1::BaseController
     project = Project.find(params[:id])
 
     if project.update(project_params)
-      render json: project, status: :updated
+      render json: project, status: :ok
     else
       render json: { errors: project.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Project not found" }, status: :not_found
   end
 
   def destroy
