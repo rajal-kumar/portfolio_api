@@ -96,7 +96,7 @@ RSpec.describe "Projects API", type: :request do
     context "when the project exists and params are valid" do
       let!(:project) { FactoryBot.create(:project) }
 
-      it "updates project returnd 200 OK" do
+      it "updates project returns 200 OK" do
         patch api_v1_project_path(project.id), params: { project: {title: "Updated title", notes: "Added some note"}}
 
         expect(response).to have_http_status(:ok)
