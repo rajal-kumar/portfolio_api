@@ -48,7 +48,7 @@ RSpec.describe "Projects API", type: :request do
 
     context "when the project does not exist" do
       it "returns 404 not found" do
-        get api_v1_project_path(1)
+        get api_v1_project_path(99999999)
 
         expect(response).to have_http_status(:not_found)
 
