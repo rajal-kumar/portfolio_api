@@ -89,9 +89,7 @@ RSpec.describe "Projects API", type: :request do
       # expectation: returns 422 unprocessable entity with errors
       it "responds with unprocessable_entity status" do
         params = {
-          title: "",
           description: "",
-          status: 1,
           technology_stack: 1,
           repository_url: "www.shouldbeasite.com",
         }
@@ -106,24 +104,73 @@ RSpec.describe "Projects API", type: :request do
   describe "PATCH /api/v1/projects/:id" do
     context "when the project exists and params are valid" do
       # expectation: updates project, returns 200 OK
+      let!(:project) { FactoryBot.create(:project) }
+
+      it "updates project returnd 200 OK" do
+        patch api_v1_project_path(project.id), params: { project: {title: "Updated title", notes: "Added some note"}}
+
+        expect(response).to have_http_status(:ok)
+
+        json = JSON.parse(response.body)
+        expect(json["id"]).to eq(project.id)
+        expect(json["title"]).to eq("Updated title")
+        expect(json["notes"]).to eq("Added some note")
+      end
     end
 
     context "when the project exists but params are invalid" do
       # expectation: returns 422 unprocessable entity
+      let!(:project) { FactoryBot.create(:project) }
+
+      it "returns 422 unprocessable entity" do
+        patch api_v1_project_path(project.id), params: { project: {title: 110011, description: 43110, status: "Not done"}}
+
+        expect(response).to have_http_status(:unprocessable_entity)
+
+        json = JSON.parse(response.body)
+        expect(json).to include("errors" => ["Status Not done is not a valid status"])
+      end
     end
 
     context "when the project does not exist" do
       # expectation: returns 404 not found
+      it "returns 404 not found" do
+        patch api_v1_project_path(1)
+
+        expect(response).to have_http_status(:not_found)
+
+        json = JSON.parse(response.body)
+        expect(json).to include("error" => "Project not found")
+      end
     end
   end
 
   describe "DELETE /api/v1/projects/:id" do
     context "when the project exists" do
       # expectation: deletes project, returns 200 OK
+      let!(:project) { FactoryBot.create(:project) }
+
+      it "deletes project returns 200 OK" do
+        delete api_v1_project_path(project.id)
+
+        expect(response).to have_http_status(:ok)
+
+        json = JSON.parse(response.body)
+        expect(json["id"]).to eq(nil)
+        expect(json).to include("message" => "Project deleted successfully")
+      end
     end
 
     context "when the project does not exist" do
       # expectation: returns 404 not found
+      it "returns 404 not found" do
+        delete api_v1_project_path(1)
+
+        expect(response).to have_http_status(:not_found)
+
+        json = JSON.parse(response.body)
+        expect(json).to include("error" => "Project not found")
+      end
     end
   end
 end
