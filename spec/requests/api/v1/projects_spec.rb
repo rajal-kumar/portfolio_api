@@ -61,19 +61,12 @@ RSpec.describe "Projects API", type: :request do
   describe "POST /api/v1/projects" do
     context "with valid parameters" do
       it "responds with a created status" do
-        params = {
-          title: "test_proj",
-          description: "Simple",
-          status: "in_progress",
-          technology_stack: "RoR",
-          repository_url: "www.shouldbeasite.com",
-          live_url: "www.shouldalsobeasite.com",
-          notes: ""
-        }
-
-        post api_v1_projects_path, params: { project: params }
+        post api_v1_projects_path, :params => { :project => {title: "test_proj", description: "Simple", status: "in_progress", technology_stack: "RoR", repository_url: "www.shouldbeasite.com"} }
 
         expect(response).to have_http_status(:created)
+
+        json = JSON.parse(response.body)
+        expect(json["status"]).to eq("in_progress")
       end
     end
 
