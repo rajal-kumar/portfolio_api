@@ -5,6 +5,8 @@ RSpec.describe "Projects API", type: :request do
   let(:valid_project) { FactoryBot.create(:project) }
   let(:invalid_project) { FactoryBot.create(:project, title: 110011, description: 43110, status: "Not done") }
 
+  let(:json_response) { JSON.parse(response.body) }
+
   describe "GET /api/v1/projects" do
     context "when projects exist" do
       it "returns a list of projects with status 200 OK" do
@@ -12,9 +14,8 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        json = JSON.parse(response.body)
-        expect(json).to be_an(Array)
-        expect(json.first["title"]).to eq(valid_project.title)
+        expect(json_response).to be_an(Array)
+        expect(json_response.first["title"]).to eq(valid_project.title)
       end
     end
 
@@ -24,9 +25,8 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        json = JSON.parse(response.body)
-        expect(json).to be_an(Array)
-        expect(json).to eq([])
+        expect(json_response).to be_an(Array)
+        expect(json_response).to eq([])
       end
     end
   end
@@ -38,9 +38,8 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        json = JSON.parse(response.body)
-        expect(json["id"]).to eq(valid_project.id)
-        expect(json["title"]).to eq(valid_project.title)
+        expect(json_response["id"]).to eq(valid_project.id)
+        expect(json_response["title"]).to eq(valid_project.title)
       end
     end
 
@@ -50,8 +49,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:not_found)
 
-        json = JSON.parse(response.body)
-        expect(json).to include("error" => "Project not found")
+        expect(json_response).to include("error" => "Project not found")
       end
     end
   end
@@ -63,8 +61,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:created)
 
-        json = JSON.parse(response.body)
-        expect(json["status"]).to eq("in_progress")
+        expect(json_response["status"]).to eq("in_progress")
       end
     end
 
@@ -80,8 +77,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
 
-        json = JSON.parse(response.body)
-        expect(json["errors"]).to include("Title can't be blank")
+        expect(json_response["errors"]).to include("Title can't be blank")
       end
     end
   end
@@ -93,10 +89,9 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        json = JSON.parse(response.body)
-        expect(json["id"]).to eq(valid_project.id)
-        expect(json["title"]).to eq("Updated title")
-        expect(json["notes"]).to eq("Added some note")
+        expect(json_response["id"]).to eq(valid_project.id)
+        expect(json_response["title"]).to eq("Updated title")
+        expect(json_response["notes"]).to eq("Added some note")
       end
     end
 
@@ -106,8 +101,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
 
-        json = JSON.parse(response.body)
-        expect(json).to include("errors" => ["Status Not done is not a valid status"])
+        expect(json_response).to include("errors" => ["Status Not done is not a valid status"])
       end
     end
 
@@ -117,8 +111,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:not_found)
 
-        json = JSON.parse(response.body)
-        expect(json).to include("error" => "Project not found")
+        expect(json_response).to include("error" => "Project not found")
       end
     end
   end
@@ -130,9 +123,8 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        json = JSON.parse(response.body)
-        expect(json["id"]).to eq(nil)
-        expect(json).to include("message" => "Project deleted successfully")
+        expect(json_response["id"]).to eq(nil)
+        expect(json_response).to include("message" => "Project deleted successfully")
       end
     end
 
@@ -142,8 +134,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:not_found)
 
-        json = JSON.parse(response.body)
-        expect(json).to include("error" => "Project not found")
+        expect(json_response).to include("error" => "Project not found")
       end
     end
   end
