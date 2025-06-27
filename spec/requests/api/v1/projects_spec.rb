@@ -3,14 +3,15 @@ require "rails_helper"
 RSpec.describe "Projects API", type: :request do
   # let(:user) { create(:user) } when auth is added later
   let(:valid_project) { FactoryBot.create(:project) }
-  let(:invalid_project) { FactoryBot.create(:project, title: 110011, description: 43110, status: "Not done") }
 
-  let(:json_response) { JSON.parse(response.body) }
+  let(:json_response) { JSON.parse(response.body.dup) }
 
   describe "GET /api/v1/projects" do
     context "when projects exist" do
+      before { valid_project }
+
       it "returns a list of projects with status 200 OK" do
-        get api_v1_projects_path, params: { project: valid_project }
+        get api_v1_projects_path
 
         expect(response).to have_http_status(:ok)
 
@@ -56,8 +57,19 @@ RSpec.describe "Projects API", type: :request do
 
   describe "POST /api/v1/projects" do
     context "with valid parameters" do
+      let(:valid_params) do
+        {
+          project: {
+            title: "test_proj",
+            description: "Simple",
+            status: "in_progress",
+            technology_stack: "RoR",
+            repository_url: "www.shouldbeasite.com"
+          }
+        }
+      end
       it "responds with a created status" do
-        post api_v1_projects_path, :params => { :project => {title: "test_proj", description: "Simple", status: "in_progress", technology_stack: "RoR", repository_url: "www.shouldbeasite.com"} }
+        expect { post api_v1_projects_path, params: valid_params }.to change(Project, :count).by(1)
 
         expect(response).to have_http_status(:created)
 
@@ -118,13 +130,15 @@ RSpec.describe "Projects API", type: :request do
 
   describe "DELETE /api/v1/projects/:id" do
     context "when the project exists" do
+      before { valid_project }
+
       it "deletes project returns 200 OK" do
         delete api_v1_project_path(valid_project.id)
 
         expect(response).to have_http_status(:ok)
 
-        expect(json_response["id"]).to eq(nil)
         expect(json_response).to include("message" => "Project deleted successfully")
+        expect(Project.find_by(id: valid_project.id)).to be_nil
       end
     end
 
