@@ -1,16 +1,15 @@
 module Api
   module V1
     class ProjectsController < ApplicationController
+      before_action :set_project, only: [:show, :update, :destroy]
+
       def index
-        @projects = Project.all
-        render json: @projects, status: :ok
+        projects = Project.all
+        render json: projects, status: :ok
       end
 
       def show
-        @project = Project.find(params[:id])
         render json: @project, status: :ok
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: "Project not found" }, status: :not_found
       end
 
       def create
@@ -24,32 +23,31 @@ module Api
       end
 
       def update
-        project = Project.find(params[:id])
-
-        if project.update(project_params)
-          render json: project, status: :ok
+        if @project.update(project_params)
+          render json: @project, status: :ok
         else
-          render json: { errors: project.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity
         end
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: "Project not found" }, status: :not_found
       end
 
       def destroy
-      project = Project.find(params[:id])
-      project.destroy!
-
-        render json: { message: "Project deleted successfully" }, status: :ok
-      rescue ActiveRecord::RecordNotDestroyed => e
-        render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: "Project not found" }, status: :not_found
+        if @project.destroy
+          render json: { message: "Project deleted successfully" }, status: :ok
+        else
+          render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity
+        end
       end
 
       private
 
+      def set_project
+       @project = Project.find(params[:id])
+       rescue ActiveRecord::RecordNotFound
+        render json: { error: "Project not found" }, status: :not_found
+      end
+
       def project_params
-      params.require(:project).permit(:title, :description, :status, :technology_stack, :repository_url, :live_url, :notes)
+        params.require(:project).permit(:title, :description, :status, :technology_stack, :repository_url, :live_url, :notes)
       end
     end
   end
