@@ -2,19 +2,19 @@ require "rails_helper"
 
 RSpec.describe "Projects API", type: :request do
   # let(:user) { create(:user) } when auth is added later
+  let(:valid_project) { FactoryBot.create(:project) }
+  let(:invalid_project) { FactoryBot.create(:project, title: 110011, description: 43110, status: "Not done") }
 
   describe "GET /api/v1/projects" do
     context "when projects exist" do
-      let!(:project) { FactoryBot.create(:project) }
-
       it "returns a list of projects with status 200 OK" do
-        get api_v1_projects_path
+        get api_v1_projects_path, params: { project: valid_project }
 
         expect(response).to have_http_status(:ok)
 
         json = JSON.parse(response.body)
         expect(json).to be_an(Array)
-        expect(json.first["title"]).to eq(project.title)
+        expect(json.first["title"]).to eq(valid_project.title)
       end
     end
 
@@ -33,16 +33,14 @@ RSpec.describe "Projects API", type: :request do
 
   describe "GET /api/v1/projects/:id" do
     context "when the project exists" do
-      let!(:project) { FactoryBot.create(:project) }
-
       it "returns the project with 200 OK" do
-        get api_v1_project_path(project.id)
+        get api_v1_project_path(valid_project.id)
 
         expect(response).to have_http_status(:ok)
 
         json = JSON.parse(response.body)
-        expect(json["id"]).to eq(project.id)
-        expect(json["title"]).to eq(project.title)
+        expect(json["id"]).to eq(valid_project.id)
+        expect(json["title"]).to eq(valid_project.title)
       end
     end
 
@@ -81,31 +79,30 @@ RSpec.describe "Projects API", type: :request do
         post api_v1_projects_path, params: { project: params }
 
         expect(response).to have_http_status(:unprocessable_entity)
+
+        json = JSON.parse(response.body)
+        expect(json["errors"]).to include("Title can't be blank")
       end
     end
   end
 
   describe "PATCH /api/v1/projects/:id" do
     context "when the project exists and params are valid" do
-      let!(:project) { FactoryBot.create(:project) }
-
       it "updates project returns 200 OK" do
-        patch api_v1_project_path(project.id), params: { project: {title: "Updated title", notes: "Added some note"}}
+        patch api_v1_project_path(valid_project.id), params: { project: {title: "Updated title", notes: "Added some note"}}
 
         expect(response).to have_http_status(:ok)
 
         json = JSON.parse(response.body)
-        expect(json["id"]).to eq(project.id)
+        expect(json["id"]).to eq(valid_project.id)
         expect(json["title"]).to eq("Updated title")
         expect(json["notes"]).to eq("Added some note")
       end
     end
 
     context "when the project exists but params are invalid" do
-      let!(:project) { FactoryBot.create(:project) }
-
       it "returns 422 unprocessable entity" do
-        patch api_v1_project_path(project.id), params: { project: {title: 110011, description: 43110, status: "Not done"}}
+        patch api_v1_project_path(valid_project.id), params: { project: {status: "Not done"}}
 
         expect(response).to have_http_status(:unprocessable_entity)
 
@@ -128,10 +125,8 @@ RSpec.describe "Projects API", type: :request do
 
   describe "DELETE /api/v1/projects/:id" do
     context "when the project exists" do
-      let!(:project) { FactoryBot.create(:project) }
-
       it "deletes project returns 200 OK" do
-        delete api_v1_project_path(project.id)
+        delete api_v1_project_path(valid_project.id)
 
         expect(response).to have_http_status(:ok)
 
