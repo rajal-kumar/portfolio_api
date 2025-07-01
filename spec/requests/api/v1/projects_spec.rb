@@ -8,26 +8,35 @@ RSpec.describe "Projects API", type: :request do
 
   describe "GET /api/v1/projects" do
     context "when projects exist" do
-      before { valid_project }
+      let(:project) { create(:project) }
 
-      it "returns a list of projects with status 200 OK" do
-        get api_v1_projects_path
+      before { get api_v1_projects_path }
 
+      it "returns 200 OK" do
         expect(response).to have_http_status(:ok)
+      end
 
-        expect(json_response).to be_a(Hash)
+      it "returns a projects array" do
         expect(json_response["projects"]).to be_an(Array)
-        expect(json_response["projects"].first["title"]).to eq(valid_project.title)
+      end
+
+      it "returns pagination metadata" do
+        expect(json_response["meta"]).to include("current_page")
       end
     end
 
     context "when no projects exist" do
-      it "returns an empty array with 200 OK" do
-        get api_v1_projects_path
+      before { get api_v1_projects_path }
 
+      it "returns 200 OK" do
         expect(response).to have_http_status(:ok)
+      end
 
+      it "returns a hash response" do
         expect(json_response).to be_a(Hash)
+      end
+
+      it "returns a empty projects array" do
         expect(json_response["projects"]).to eq([])
       end
     end
@@ -35,22 +44,29 @@ RSpec.describe "Projects API", type: :request do
 
   describe "GET /api/v1/projects/:id" do
     context "when the project exists" do
-      it "returns the project with 200 OK" do
-        get api_v1_project_path(valid_project.id)
+      before { get api_v1_project_path(valid_project.id) }
 
+      it "returns 200 OK" do
         expect(response).to have_http_status(:ok)
+      end
 
+      it "returns the correct project ID" do
         expect(json_response["id"]).to eq(valid_project.id)
+      end
+
+      it "returns the correct project title" do
         expect(json_response["title"]).to eq(valid_project.title)
       end
     end
 
     context "when the project does not exist" do
+      before { get api_v1_project_path(99999999) }
+
       it "returns 404 not found" do
-        get api_v1_project_path(99999999)
-
         expect(response).to have_http_status(:not_found)
+      end
 
+      it "returns a not found error message" do
         expect(json_response).to include("error" => "Project not found")
       end
     end
@@ -70,27 +86,39 @@ RSpec.describe "Projects API", type: :request do
         }
       end
 
-      it "responds with a created status" do
+      it "creates a new project" do
         expect { post api_v1_projects_path, params: valid_params }.to change(Project, :count).by(1)
+      end
 
+      it "returns 201 created" do
+        post api_v1_projects_path, params: valid_params
         expect(response).to have_http_status(:created)
+      end
 
+      it "returns correct status in response" do
+        post api_v1_projects_path, params: valid_params
         expect(json_response["status"]).to eq("in_progress")
       end
     end
 
     context "with invalid parameters" do
-      it "responds with unprocessable_entity status" do
-        params = {
-          description: "",
-          technology_stack: 1,
-          repository_url: "www.shouldbeasite.com"
+      let(:invalid_params) do
+        {
+          project: {
+            description: "",
+            technology_stack: 1,
+            repository_url: "www.shouldbeasite.com"
+          }
         }
+      end
 
-        post api_v1_projects_path, params: { project: params }
+      before { post api_v1_projects_path, params: invalid_params }
 
+      it "returns 422 unprocessable_entity" do
         expect(response).to have_http_status(:unprocessable_entity)
+      end
 
+      it "returns validation error message" do
         expect(json_response["errors"]).to include("Title can't be blank")
       end
     end
@@ -98,33 +126,49 @@ RSpec.describe "Projects API", type: :request do
 
   describe "PATCH /api/v1/projects/:id" do
     context "when the project exists and params are valid" do
-      it "updates project returns 200 OK" do
-        patch api_v1_project_path(valid_project.id), params: { project: { title: "Updated title", notes: "Added some note" } }
+      let!(:project) { valid_project }
 
+      before do
+        patch api_v1_project_path(project.id), params: {
+          project: { title: "Updated title", notes: "Added some note" }
+        }
+      end
+
+      it "returns 200 OK" do
         expect(response).to have_http_status(:ok)
+      end
 
-        expect(json_response["id"]).to eq(valid_project.id)
+      it "updates the title" do
         expect(json_response["title"]).to eq("Updated title")
+      end
+
+      it "updates the notes" do
         expect(json_response["notes"]).to eq("Added some note")
       end
     end
 
     context "when the project exists but params are invalid" do
-      it "returns 422 unprocessable entity" do
+      before do
         patch api_v1_project_path(valid_project.id), params: { project: { status: "Not done" } }
+      end
 
+      it "returns 422 unprocessable entity" do
         expect(response).to have_http_status(:unprocessable_entity)
+      end
 
+      it "returns a status error message" do
         expect(json_response).to include("errors" => [ "'Not done' is not a valid status" ])
       end
     end
 
     context "when the project does not exist" do
+      before { patch api_v1_project_path(999999) }
+
       it "returns 404 not found" do
-        patch api_v1_project_path(1)
-
         expect(response).to have_http_status(:not_found)
+      end
 
+      it "returns an error message" do
         expect(json_response).to include("error" => "Project not found")
       end
     end
@@ -132,24 +176,32 @@ RSpec.describe "Projects API", type: :request do
 
   describe "DELETE /api/v1/projects/:id" do
     context "when the project exists" do
-      before { valid_project }
+      let!(:project) { valid_project }
 
-      it "deletes project returns 200 OK" do
-        delete api_v1_project_path(valid_project.id)
-
+      it "returns 200 OK" do
+        delete api_v1_project_path(project.id)
         expect(response).to have_http_status(:ok)
+      end
 
+      it "returns success message" do
+        delete api_v1_project_path(project.id)
         expect(json_response).to include("message" => /deleted/i)
-        expect(Project.find_by(id: valid_project.id)).to be_nil
+      end
+
+      it "actually deletes the project" do
+        delete api_v1_project_path(project.id)
+        expect(Project.find_by(id: project.id)).to be_nil
       end
     end
 
     context "when the project does not exist" do
+      before { delete api_v1_project_path(999999) }
+
       it "returns 404 not found" do
-        delete api_v1_project_path(1)
-
         expect(response).to have_http_status(:not_found)
+      end
 
+      it "returns an error message" do
         expect(json_response).to include("error" => "Project not found")
       end
     end

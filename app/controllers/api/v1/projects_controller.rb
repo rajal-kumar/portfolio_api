@@ -39,7 +39,7 @@ module Api
           render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity
         end
       rescue ArgumentError => e
-        render json: { errors: [e.message] }, status: :unprocessable_entity
+        render json: { errors: [ e.message ] }, status: :unprocessable_entity
       end
 
       def destroy
