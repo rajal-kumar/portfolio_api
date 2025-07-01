@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProjectsController < ApplicationController
-      before_action :set_project, only: [:show, :update, :destroy]
+      before_action :set_project, only: [ :show, :update, :destroy ]
 
       def index
         projects = Project.all
@@ -28,6 +28,8 @@ module Api
         else
           render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity
         end
+      rescue ArgumentError => e
+        render json: { errors: [e.message] }, status: :unprocessable_entity
       end
 
       def destroy
@@ -42,7 +44,8 @@ module Api
 
       def set_project
        @project = Project.find(params[:id])
-       rescue ActiveRecord::RecordNotFound
+
+      rescue ActiveRecord::RecordNotFound
         render json: { error: "Project not found" }, status: :not_found
       end
 
@@ -52,4 +55,3 @@ module Api
     end
   end
 end
-
