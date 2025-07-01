@@ -1,9 +1,9 @@
 class Project < ApplicationRecord
-  STATUS = ["pending", "in_progress", "complete"]
+  enum :status, { pending: 0, in_progress: 1, completed: 2 }
 
   validates :title, presence: true
   validates :description, presence: true
-  validates :status, presence: true, inclusion: { in: STATUS, message: "%{value} is not a valid status" }
+  validates :status, presence: true
   validates :technology_stack, presence: true
   validates :repository_url, presence: true
 end
