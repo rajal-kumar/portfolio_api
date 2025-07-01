@@ -4,6 +4,8 @@ module Api
       before_action :set_project, only: [ :show, :update, :destroy ]
 
       def index
+        projects = Project.all.page(params[:page]).per(params[:per_page] || 10)
+
         render json: {
           projects: projects.as_json,
           meta: {

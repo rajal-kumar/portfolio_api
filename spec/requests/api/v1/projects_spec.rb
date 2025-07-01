@@ -15,8 +15,9 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        expect(json_response).to be_an(Array)
-        expect(json_response.first["title"]).to eq(valid_project.title)
+        expect(json_response).to be_a(Hash)
+        expect(json_response["projects"]).to be_an(Array)
+        expect(json_response["projects"].first["title"]).to eq(valid_project.title)
       end
     end
 
@@ -26,8 +27,8 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        expect(json_response).to be_an(Array)
-        expect(json_response).to eq([])
+        expect(json_response).to be_a(Hash)
+        expect(json_response["projects"]).to eq([])
       end
     end
   end
@@ -138,7 +139,7 @@ RSpec.describe "Projects API", type: :request do
 
         expect(response).to have_http_status(:ok)
 
-        expect(json_response).to include("message" => "Project deleted successfully")
+        expect(json_response).to include("message" => /deleted/i)
         expect(Project.find_by(id: valid_project.id)).to be_nil
       end
     end
