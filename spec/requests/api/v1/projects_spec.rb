@@ -68,6 +68,7 @@ RSpec.describe "Projects API", type: :request do
           }
         }
       end
+
       it "responds with a created status" do
         expect { post api_v1_projects_path, params: valid_params }.to change(Project, :count).by(1)
 
@@ -82,7 +83,7 @@ RSpec.describe "Projects API", type: :request do
         params = {
           description: "",
           technology_stack: 1,
-          repository_url: "www.shouldbeasite.com",
+          repository_url: "www.shouldbeasite.com"
         }
 
         post api_v1_projects_path, params: { project: params }
@@ -97,7 +98,7 @@ RSpec.describe "Projects API", type: :request do
   describe "PATCH /api/v1/projects/:id" do
     context "when the project exists and params are valid" do
       it "updates project returns 200 OK" do
-        patch api_v1_project_path(valid_project.id), params: { project: {title: "Updated title", notes: "Added some note"}}
+        patch api_v1_project_path(valid_project.id), params: { project: { title: "Updated title", notes: "Added some note" } }
 
         expect(response).to have_http_status(:ok)
 
@@ -109,11 +110,11 @@ RSpec.describe "Projects API", type: :request do
 
     context "when the project exists but params are invalid" do
       it "returns 422 unprocessable entity" do
-        patch api_v1_project_path(valid_project.id), params: { project: {status: "Not done"}}
+        patch api_v1_project_path(valid_project.id), params: { project: { status: "Not done" } }
 
         expect(response).to have_http_status(:unprocessable_entity)
 
-        expect(json_response).to include("errors" => ["Status Not done is not a valid status"])
+        expect(json_response).to include("errors" => [ "'Not done' is not a valid status" ])
       end
     end
 
