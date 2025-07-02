@@ -72,4 +72,11 @@ RSpec.configure do |config|
 
   # Configure FactoryBot methods to be available in specs
   config.include FactoryBot::Syntax::Methods
+
+  Shoulda::Matchers.configure do |config|
+    config.integrate do |with|
+      with.test_framework :rspec
+      with.library :rails
+    end
+  end
 end
