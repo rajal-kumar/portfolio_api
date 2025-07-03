@@ -4,29 +4,25 @@ module Api
       before_action :set_project, only: [ :show, :update, :destroy ]
 
       def index
-        projects = Project.all.page(params[:page]).per(params[:per_page] || 10)
+        page = params[:page] || 1
+        per_page = params[:per_page] || 10
+        projects = Project.page(page).per(per_page)
 
-        render json: {
-          projects: projects.as_json,
-          meta: {
-            total_pages: projects.total_pages,
-            current_page: projects.current_page,
-            next_page: projects.next_page,
-            prev_page: projects.prev_page,
-            total_count: projects.total_count
-          }
+        render json: projects, each_serializer: ProjectSerializer, meta: {
+          total_pages: projects.total_pages,
+          current_page: projects.current_page
         }, status: :ok
       end
 
       def show
-        render json: @project, status: :ok
+        render json: @project, serializer: ProjectSerializer, status: :ok
       end
 
       def create
         project = Project.new(project_params)
 
         if project.save
-          render json: project, status: :created
+           render json: project, serializer: ProjectSerializer, status: :created
         else
           render json: { errors: project.errors.full_messages }, status: :unprocessable_entity
         end
@@ -34,7 +30,7 @@ module Api
 
       def update
         if @project.update(project_params)
-          render json: @project, status: :ok
+          render json: @project, serializer: ProjectSerializer, status: :ok
         else
           render json: { errors: @project.errors.full_messages }, status: :unprocessable_entity
         end
