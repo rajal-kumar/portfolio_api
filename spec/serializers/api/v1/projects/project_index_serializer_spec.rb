@@ -13,24 +13,30 @@ RSpec.describe Api::V1::Projects::ProjectIndexSerializer do
     )
   end
 
-  subject { described_class.new(project).as_json }
+  let(:serialized) { described_class.new(project).as_json }
 
-  it "includes truncated summary" do
-    expect(subject[:summary].length).to be <= 50
-    expect(subject[:summary]).to eq(project.description.truncate(50))
+  describe "summary" do
+    it "is truncated to 50 characters" do
+      expect(serialized[:summary].length).to be <= 50
+    end
+
+    it "matches truncated version of description" do
+      expect(serialized[:summary]).to eq(project.description.truncate(50))
+    end
   end
 
-  it "includes nested urls" do
-    expect(subject[:urls]).to eq({
-      repo: "https://repo.com",
-      live: "https://live.com"
-    })
+  describe "urls" do
+    it "includes nested repo and live URLs" do
+      expect(serialized[:urls]).to eq({
+        repo: "https://repo.com",
+        live: "https://live.com"
+      })
+    end
   end
 
-  it "includes tech_stack mapped from technology_stack" do
-    expect(subject[:tech_stack]).to eq("Rails")
+  describe "tech_stack" do
+    it "matches technology_stack" do
+      expect(serialized[:tech_stack]).to eq("Rails")
+    end
   end
 end
-
-
-
