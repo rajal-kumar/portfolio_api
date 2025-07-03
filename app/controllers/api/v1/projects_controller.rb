@@ -12,14 +12,7 @@ module Api
           data: ActiveModelSerializers::SerializableResource.new(
             projects, each_serializer: Api::V1::Projects::ProjectIndexSerializer,
           ),
-          meta: {
-            total_pages: projects.total_pages,
-            current_page: projects.current_page,
-            total_count: projects.total_count,
-            per_page: projects.limit_value,
-            next_page: projects.next_page,
-            prev_page: projects.prev_page
-          }
+          meta: pagination_meta(projects)
         }, status: :ok
       end
 
@@ -74,6 +67,17 @@ module Api
 
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Project not found" }, status: :not_found
+      end
+
+      def pagination_meta(collection)
+        {
+          total_pages: collection.total_pages,
+          current_page: collection.current_page,
+          total_count: collection.total_count,
+          per_page: collection.limit_value,
+          next_page: collection.next_page,
+          prev_page: collection.prev_page
+        }
       end
 
       def project_params
