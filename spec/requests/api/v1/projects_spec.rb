@@ -17,7 +17,7 @@ RSpec.describe "Projects API", type: :request do
       end
 
       it "returns a projects array" do
-        expect(json_response["projects"]).to be_an(Array)
+        expect(json_response["data"]["projects"]).to be_an(Array)
       end
 
       it "returns pagination metadata" do
@@ -37,7 +37,7 @@ RSpec.describe "Projects API", type: :request do
       end
 
       it "returns a empty projects array" do
-        expect(json_response["projects"]).to eq([])
+        expect(json_response["data"]["projects"]).to eq([])
       end
     end
   end
@@ -51,11 +51,11 @@ RSpec.describe "Projects API", type: :request do
       end
 
       it "returns the correct project ID" do
-        expect(json_response["id"]).to eq(valid_project.id)
+        expect(json_response["data"]["project"]["id"]).to eq(valid_project.id)
       end
 
       it "returns the correct project title" do
-        expect(json_response["title"]).to eq(valid_project.title)
+        expect(json_response["data"]["project"]["title"]).to eq(valid_project.title)
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe "Projects API", type: :request do
 
       it "returns correct status in response" do
         post api_v1_projects_path, params: valid_params
-        expect(json_response["status"]).to eq("in_progress")
+        expect(json_response["data"]["project"]["status"]).to eq("in_progress")
       end
     end
 
@@ -139,11 +139,11 @@ RSpec.describe "Projects API", type: :request do
       end
 
       it "updates the title" do
-        expect(json_response["title"]).to eq("Updated title")
+        expect(json_response["data"]["project"]["title"]).to eq("Updated title")
       end
 
       it "updates the notes" do
-        expect(json_response["notes"]).to eq("Added some note")
+        expect(json_response["data"]["project"]["notes"]).to eq("Added some note")
       end
     end
 
@@ -185,7 +185,7 @@ RSpec.describe "Projects API", type: :request do
 
       it "returns success message" do
         delete api_v1_project_path(project.id)
-        expect(json_response).to include("message" => /deleted/i)
+        expect(json_response["data"]).to include("message" => /deleted/i)
       end
 
       it "actually deletes the project" do
