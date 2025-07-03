@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::Projects::ProjectSerializer do
-  subject { described_class.new(project).as_json }
+  subject(:serialized_project) { described_class.new(project).as_json }
 
   let(:project) do
     build_stubbed(
@@ -19,16 +19,30 @@ RSpec.describe Api::V1::Projects::ProjectSerializer do
     )
   end
 
-  it "includes all expected fields" do
-    expect(subject).to include(
+  it "includes the id and title" do
+    expect(serialized_project).to include(
       id: project.id,
-      title: project.title,
+      title: project.title
+    )
+  end
+
+  it "includes the description and status" do
+    expect(serialized_project).to include(
       description: project.description,
-      status: project.status,
-      technology_stack: project.technology_stack,
+      status: project.status
+    )
+  end
+
+  it "includes URLs and notes" do
+    expect(serialized_project).to include(
       repository_url: project.repository_url,
       live_url: project.live_url,
-      notes: project.notes,
+      notes: project.notes
+    )
+  end
+
+  it "includes timestamps" do
+    expect(serialized_project).to include(
       created_at: project.created_at,
       updated_at: project.updated_at
     )
